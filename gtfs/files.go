@@ -11,7 +11,7 @@ import (
 )
 
 type feedFiles struct {
-	routeFile *bufio.Scanner
+	RouteFile *bufio.Scanner
 }
 
 func Parse(url string) feedFiles {
@@ -63,10 +63,9 @@ func ReadZip(r *zip.Reader) feedFiles {
 		if err != nil {
 			log.Fatal(err)
 		}
-		defer rc.Close()
 		scanner := bufio.NewScanner(rc)
 		if f.Name == "routes.txt" {
-			feed.routeFile = scanner
+			feed.RouteFile = scanner
 		}
 	}
 

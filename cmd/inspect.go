@@ -24,6 +24,9 @@ var inspectCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		gtfsPath := args[0]
 		files := gtfs.Parse(gtfsPath)
+		for files.RouteFile.Scan() {
+			fmt.Println(files.RouteFile.Text())
+		}
 		gtfs.CreateFeed(files)
 	},
 }

@@ -1,7 +1,5 @@
 package gtfs
 
-import "fmt"
-
 type Route struct {
 	Name string
 }
@@ -15,10 +13,6 @@ func (f *Feed) Routes() []Route {
 }
 
 func CreateFeed(files feedFiles) *Feed {
-	for files.routeFile.Scan() {
-		fmt.Println(files.routeFile.Text())
-	}
-
 	return &Feed{
 		routes: []Route{
 			{Name: "Route 1"},
