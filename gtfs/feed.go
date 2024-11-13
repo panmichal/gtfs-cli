@@ -1,5 +1,12 @@
 package gtfs
 
+import (
+	"encoding/csv"
+	"io"
+	"log"
+	"strings"
+)
+
 type Route struct {
 	Name string
 }
@@ -8,16 +15,39 @@ type Feed struct {
 	routes []Route
 }
 
-func (f *Feed) Routes() []Route {
+func (f *Feed) GetRoutes() []Route {
 	return f.routes
 }
 
-func CreateFeed(files feedFiles) *Feed {
+func CreateFeed(files *feedFiles) *Feed {
+
+	routes := createRoutes(files.RouteFile)
+
 	return &Feed{
-		routes: []Route{
-			{Name: "Route 1"},
-			{Name: "Route 2"},
-			{Name: "Route 3"},
-		},
+		routes: routes,
 	}
+}
+
+func createRoutes(routesContent []byte) []Route {
+	var routes []Route
+	r := csv.NewReader(strings.NewReader(string(routesContent)))
+	_, err := r.Read()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		//get route name from index 2 of record
+		routeName := record[2]
+		routes = append(routes, Route{Name: routeName})
+		// fmt.Println(record)
+	}
+
+	return routes
 }

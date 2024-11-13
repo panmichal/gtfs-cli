@@ -2,7 +2,6 @@ package gtfs
 
 import (
 	"archive/zip"
-	"bufio"
 	"bytes"
 	"io"
 	"log"
@@ -11,21 +10,16 @@ import (
 )
 
 type feedFiles struct {
-	RouteFile *bufio.Scanner
+	RouteFile []byte
 }
 
-func Parse(url string) feedFiles {
+func Parse(url string) *feedFiles {
 	reader, _ := FetchZip(url)
 	feed := ReadZip(reader)
 	return feed
 }
 
 func FetchZip(url_or_path string) (*zip.Reader, error) {
-	//check if url is a url or a file path
-	//if it is a file path, read the file and return a zip reader
-	//if it is a url, download the file and return a zip reader
-	//if it is neither, return an error
-
 	var body []byte
 
 	file, err := os.Open(url_or_path)
@@ -55,7 +49,7 @@ func download(url string) ([]byte, error) {
 	return body, nil
 }
 
-func ReadZip(r *zip.Reader) feedFiles {
+func ReadZip(r *zip.Reader) *feedFiles {
 	feed := feedFiles{}
 
 	for _, f := range r.File {
@@ -63,11 +57,11 @@ func ReadZip(r *zip.Reader) feedFiles {
 		if err != nil {
 			log.Fatal(err)
 		}
-		scanner := bufio.NewScanner(rc)
+		defer rc.Close()
 		if f.Name == "routes.txt" {
-			feed.RouteFile = scanner
+			feed.RouteFile, _ = io.ReadAll(rc)
 		}
 	}
 
-	return feed
+	return &feed
 }
