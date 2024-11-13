@@ -23,7 +23,8 @@ var inspectCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		gtfsPath := args[0]
-		gtfs.Parse(gtfsPath)
+		files := gtfs.Parse(gtfsPath)
+		gtfs.CreateFeed(files)
 	},
 }
 
